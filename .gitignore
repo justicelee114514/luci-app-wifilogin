@@ -1,0 +1,13 @@
+# 构建产物
+*.ipk
+*.apk
+
+# Python
+__pycache__/
+*.pyc
+
+# 临时/本地文件
+tmp/
+*.log
+.DS_Store
+Thumbs.db
