@@ -1,0 +1,69 @@
+<%#
+  /usr/lib/lua/luci/view/wifilogin/status.htm
+  「Portal 自动登录」页面底部的状态区 + 手动操作按钮
+
+  Copyright (C) 2026 wifilogin contributors
+  SPDX-License-Identifier: AGPL-3.0-or-later
+-%>
+<%
+	local fs = require "nixio.fs"
+	local uci = require "luci.model.uci".cursor()
+	local enabled = uci:get("wifilogin", "main", "enabled")
+	local portal = uci:get("wifilogin", "main", "portal")
+	if not portal or portal == "" then
+		portal = "（未配置，自动探测）"
+	end
+	local action_url = luci.dispatcher.build_url("admin/services/wifilogin/action")
+	local logfile = "/tmp/wifilogin/manual.log"
+	local logtext = fs.readfile(logfile) or ""
+-%>
+
+<div class="cbi-section">
+	<h3><%:运行状态%></h3>
+
+	<div class="cbi-value">
+		<label class="cbi-value-title"><%:自动登录服务%></label>
+		<div class="cbi-value-field">
+		<% if enabled == "1" then -%>
+			<em style="color:#2e7d32"><%:已启用%></em>
+		<% else -%>
+			<em style="color:#c62828"><%:已关闭%></em>
+		<% end -%>
+			&nbsp;—&nbsp;<a href="<%=luci.dispatcher.build_url('admin/system/startup')%>"><%:开机启动项%></a>
+		</div>
+	</div>
+
+	<div class="cbi-value">
+		<label class="cbi-value-title"><%:当前认证网关%></label>
+		<div class="cbi-value-field">
+			<code><%=portal%></code>
+			<br />
+			<span class="cbi-value-description">
+				<%:在上面「网关（Portal）地址」里改；留空就靠自动探测。改完点「测试网关」能确认地址通不通。%>
+			</span>
+		</div>
+	</div>
+
+	<div class="cbi-value">
+		<label class="cbi-value-title"><%:手动操作%></label>
+		<div class="cbi-value-field">
+			<a class="cbi-button cbi-button-apply" href="<%=action_url%>?act=login"><%:立即登录%></a>
+			<a class="cbi-button" href="<%=action_url%>?act=status"><%:仅检测状态%></a>
+			<a class="cbi-button" href="<%=action_url%>?act=testportal"><%:测试网关%></a>
+			<a class="cbi-button" href="<%=action_url%>?act=diag"><%:诊断%></a>
+			<br />
+			<span class="cbi-value-description">
+				<%:「立即登录」会强制走一次 Portal 认证并刷新下方结果；认证成功会跳回登录页(showLogin.do)。%>
+			</span>
+		</div>
+	</div>
+
+	<% if logtext ~= "" then -%>
+	<div class="cbi-value">
+		<label class="cbi-value-title"><%:上次执行结果%></label>
+		<div class="cbi-value-field">
+			<pre style="white-space:pre-wrap;word-break:break-all;max-height:260px;overflow:auto;font-size:12px;line-height:1.45;background:#f7f7f7;border:1px solid #ddd;padding:8px;border-radius:4px"><%=logtext%></pre>
+		</div>
+	</div>
+	<% end -%>
+</div>

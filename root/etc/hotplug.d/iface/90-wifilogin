@@ -1,0 +1,15 @@
+#!/bin/sh
+# Copyright (C) 2026 wifilogin contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# /etc/hotplug.d/iface/90-wifilogin
+# WAN 口起来时立刻尝试一次登录，不必等 daemon 的下一个周期
+
+[ "$ACTION" = "ifup" ] || exit 0
+
+case "$INTERFACE" in
+	wan|wan6|wwan) ;;
+	*) exit 0 ;;
+esac
+
+[ -x /usr/bin/wifilogin.sh ] || exit 0
+/usr/bin/wifilogin.sh check &

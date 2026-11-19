@@ -1,0 +1,29 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2026 wifilogin contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# /etc/init.d/wifilogin
+
+USE_PROCD=1
+START=95
+STOP=10
+
+start_service() {
+	. /lib/functions.sh
+	config_load wifilogin
+
+	local enabled
+	config_get_bool enabled main enabled 0
+	[ "$enabled" = "1" ] || { echo "wifilogin: disabled in /etc/config/wifilogin"; return 0; }
+
+	procd_open_instance
+	procd_set_param command /usr/bin/wifilogin.sh daemon
+	procd_set_param respawn 3600 5 0
+	procd_set_param stdout 0
+	procd_set_param stderr 0
+	procd_close_instance
+}
+
+reload_service() {
+	stop
+	start
+}

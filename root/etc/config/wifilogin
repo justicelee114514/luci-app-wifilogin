@@ -1,0 +1,35 @@
+# Copyright (C) 2026 wifilogin contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# /etc/config/wifilogin
+
+config wifilogin 'main'
+	option enabled   '0'
+
+	# 当前使用的账号：填 config account 的段名；留空则用第一条
+	option active    ''
+
+	# Portal 地址：IP:端口、http:// 地址、或带 ? 的完整 showLogin.do 链接。留空则用 AC 下发的地址
+	option portal    ''
+
+	# 在线探测: 首选 204 探测，备选普通网页
+	option check_url  'http://connect.rom.miui.com/generate_204'
+	option check_url2 'http://www.baidu.com'
+
+	# 自动登录(免密)，有效期 macage=1|6|12 个月
+	option macsave   '0'
+	option macage    '6'
+
+	# 在线时的检测间隔(秒)
+	option interval  '60'
+
+	# AC 名称(一般留空，脚本会从未认证时的 302 跳转里自动获取)
+	option acname    ''
+
+	# 1=优先问 AC 要带参数的登录地址(推荐)；0=只用下面 portal 里配的地址
+	option discover  '1'
+
+# 宽带账号：可以在页面上点「添加」增加多条，随时切换
+config account 'acc1'
+	option label    '我的宽带'
+	option username 'your-broadband-account'
+	option password 'your-broadband-password'
